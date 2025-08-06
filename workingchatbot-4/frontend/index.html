@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Analyser</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-orange': '#C8773E',
+                        'warm-cream': '#F5E8D3', 
+                        'soft-cream': '#FAF2E5',
+                        'golden-yellow': '#E6A757',
+                        'deep-brown': '#2E2E2E',
+                        'warm-brown': '#8B5A3C',
+                        'light-brown': '#B5651D',
+                        'border-brown': '#D4A574',
+                        'hover-orange': '#B86B34',
+                        'sidebar-active': '#E6A757'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .typing-animation::after {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #C8773E;
+            animation: typing 1.4s infinite;
+            margin-left: 4px;
+        }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 4px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #F5E8D3;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #D4A574;
+            border-radius: 2px;
+        }
+        .message-bubble {
+            animation: fadeInUp 0.3s ease-out;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+        @media (max-width: 768px) {
+            .sidebar-hidden {
+                transform: translateX(-100%);
+            }
+        }
+        .document-selected {
+            background: linear-gradient(135deg, #E6A757 0%, #D4A574 100%);
+            border: 2px solid #B5651D;
+        }
+    </style>
+</head>
+<body class="bg-warm-cream text-deep-brown h-screen overflow-hidden">
+    <div class="flex h-full relative">
+        <!-- Mobile Sidebar Backdrop -->
+        <div id="sidebarBackdrop" class="fixed inset-0 bg-deep-brown bg-opacity-50 z-40 md:hidden hidden"></div>
+        
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-80 bg-soft-cream border-r border-border-brown flex flex-col sidebar-transition z-50 md:relative absolute h-full shadow-lg">
+            <!-- Header -->
+            <div class="p-4 border-b border-border-brown bg-gradient-to-r from-primary-orange to-hover-orange">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-xl font-bold flex items-center text-white">
+                        <i class="fas fa-brain mr-2"></i>
+                        Research Analyser
+                    </h1>
+                    <button id="newChatBtn" class="p-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg transition-all duration-200 text-white">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="p-4 border-b border-border-brown">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2 text-warm-brown">Upload Document</label>
+                    <div class="flex items-center gap-2">
+                        <input type="file" id="fileInput" accept=".pdf,.txt,.doc,.docx" class="hidden">
+                        <button id="uploadBtn" class="flex-1 p-3 bg-primary-orange hover:bg-hover-orange rounded-lg transition-all duration-200 text-center font-medium disabled:opacity-50 disabled:cursor-not-allowed text-white shadow-md">
+                            <i class="fas fa-upload mr-2"></i>
+                            <span id="uploadBtnText">Choose File</span>
+                        </button>
+                    </div>
+                    <div id="uploadStatus" class="mt-2 text-sm"></div>
+                    <div id="uploadProgress" class="hidden mt-2">
+                        <div class="w-full bg-border-brown bg-opacity-40 rounded-full h-2">
+                            <div id="progressBar" class="bg-primary-orange h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents List -->
+            <div class="p-4 border-b border-border-brown flex-1 overflow-hidden">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-medium text-warm-brown">Your Documents</h3>
+                    <button id="refreshDocsBtn" class="p-1 text-warm-brown hover:text-primary-orange transition-colors">
+                        <i class="fas fa-sync-alt text-xs"></i>
+                    </button>
+                </div>
+                <div id="documentsList" class="space-y-2 overflow-y-auto scrollbar-thin h-full">
+                    <div class="text-center text-warm-brown py-8">
+                        <i class="fas fa-file-alt text-3xl mb-2 opacity-60"></i>
+                        <p class="text-sm">No documents uploaded yet</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat History Section -->
+            <div class="p-4">
+                <h3 class="text-sm font-medium mb-3 text-warm-brown">Quick Actions</h3>
+                <div class="space-y-2">
+                    <button id="viewAllChatsBtn" class="w-full p-2 bg-golden-yellow bg-opacity-30 hover:bg-opacity-50 rounded-lg transition-colors text-sm text-deep-brown">
+                        <i class="fas fa-history mr-2"></i>
+                        View Chat History
+                    </button>
+                    <button id="clearAllBtn" class="w-full p-2 bg-red-400 bg-opacity-80 hover:bg-opacity-90 rounded-lg transition-colors text-sm text-white">
+                        <i class="fas fa-trash mr-2"></i>
+                        Clear All Chats
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Sidebar Toggle -->
+        <button id="toggleSidebar" class="md:hidden fixed top-4 left-4 z-50 p-3 bg-primary-orange hover:bg-hover-orange rounded-lg shadow-lg transition-all duration-200 text-white">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Main Chat Area -->
+        <div class="flex-1 flex flex-col min-w-0">
+            <!-- Chat Header -->
+            <div class="p-4 border-b border-border-brown bg-white shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div class="min-w-0 flex-1">
+                        <h2 id="chatTitle" class="text-lg font-semibold truncate text-deep-brown">Select a document to start chatting</h2>
+                        <div class="flex items-center gap-4 mt-1">
+                            <p id="currentDocId" class="text-sm text-warm-brown font-mono"></p>
+                            <div id="connectionStatus" class="flex items-center gap-1">
+                                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                <span class="text-xs text-warm-brown">Connected</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="clearChatBtn" class="p-2 bg-red-400 bg-opacity-80 hover:bg-opacity-90 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-white" disabled>
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button id="exportChatBtn" class="p-2 bg-primary-orange hover:bg-hover-orange rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-white" disabled>
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Container -->
+            <div id="messagesContainer" class="flex-1 overflow-y-auto scrollbar-thin p-4 space-y-4">
+                <div class="text-center text-warm-brown mt-20">
+                    <div class="bg-gradient-to-br from-primary-orange to-golden-yellow w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-brain text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl mb-2 font-semibold text-deep-brown">Welcome to Research Analyser</h3>
+                    <p class="text-sm text-warm-brown max-w-md mx-auto">Upload a document to begin your intelligent research conversation. Ask questions, get insights, and explore your content with AI assistance.</p>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-4 border-t border-border-brown bg-white">
+                <div class="flex items-end gap-3 max-w-4xl mx-auto">
+                    <div class="flex-1 relative">
+                        <textarea 
+                            id="messageInput" 
+                            placeholder="Select a document first..."
+                            class="w-full p-4 pr-12 bg-soft-cream border border-border-brown rounded-xl resize-none focus:outline-none focus:border-primary-orange focus:ring-2 focus:ring-primary-orange focus:ring-opacity-30 transition-all duration-200 placeholder-warm-brown text-deep-brown"
+                            rows="1"
+                            maxlength="2000"
+                            disabled
+                        ></textarea>
+                        <button id="sendBtn" class="absolute right-2 bottom-2 p-2 bg-primary-orange hover:bg-hover-orange rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md text-white" disabled>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                        <div class="absolute bottom-1 left-3 text-xs text-warm-brown">
+                            <span id="charCount">0</span>/2000
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between mt-2 text-xs text-warm-brown max-w-4xl mx-auto">
+                    <p>Press Enter to send, Shift+Enter for new line</p>
+                    <div id="typingIndicator" class="hidden flex items-center gap-1">
+                        <div class="w-1 h-1 bg-primary-orange rounded-full animate-bounce"></div>
+                        <div class="w-1 h-1 bg-primary-orange rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                        <div class="w-1 h-1 bg-primary-orange rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                        <span class="ml-1">AI is thinking...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="fixed inset-0 bg-deep-brown bg-opacity-60 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl border border-border-brown max-w-sm mx-4 shadow-lg">
+            <div class="flex flex-col items-center">
+                <div class="relative mb-4">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-orange"></div>
+                    <div class="absolute inset-0 rounded-full border-2 border-border-brown"></div>
+                </div>
+                <span id="loadingText" class="text-lg font-medium text-deep-brown">Processing...</span>
+                <div id="loadingSubtext" class="text-sm text-warm-brown mt-1"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat History Modal -->
+    <div id="chatHistoryModal" class="fixed inset-0 bg-deep-brown bg-opacity-60 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl border border-border-brown max-w-4xl w-full max-h-[80vh] flex flex-col shadow-lg">
+            <div class="p-6 border-b border-border-brown flex items-center justify-between">
+                <h3 class="text-xl font-semibold text-deep-brown">Chat History</h3>
+                <button id="closeChatHistoryBtn" class="p-2 hover:bg-golden-yellow hover:bg-opacity-20 rounded-lg transition-colors text-deep-brown">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="chatHistoryContent" class="flex-1 overflow-y-auto p-6">
+                <!-- Chat history content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Toast -->
+    <div id="successToast" class="fixed top-4 right-4 bg-primary-orange text-white p-4 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+        <div class="flex items-center gap-2">
+            <i class="fas fa-check-circle"></i>
+            <span id="successMessage">Success!</span>
+        </div>
+    </div>
+
+    <!-- Error Toast -->
+    <div id="errorToast" class="fixed top-4 right-4 bg-red-400 text-white p-4 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+        <div class="flex items-center gap-2">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorMessage">Error occurred!</span>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

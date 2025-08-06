@@ -1,0 +1,10 @@
+[
+  {
+    "query": "summarize Comparisons with Other Ornithopods given in the research paper",
+    "answer": "section with anatomical ju stifications for the ana- tomical assignments of the most fragmentary fos- sils is added. For systematic comparisons, the phylogeny proposed by Poole (2022) for Ornithopoda has been adopted in this work. For the anatomical iden- tification, location and orientation of the tibial frag- ment (CP 415), 3D models of appendicular elements of ornithopods were reviewed using Mor- phoSource software. A multivariate analysis has also been per- formed, consisting of a Principal Component Anal- ysis (PCA), comparing the anterior caudal vertebra (CP 411) with data obtained from measurements of the anterior caudal vertebrae of other ornithopod taxa (see Appendix 4), which have been normal- ized to base 10 logarithms. PAST v4.03 (Hammer et al., 2001) software was used to process the sta- tistical data obtained from the measurements. CP 411 was the only specimen complete enough to allow sufficient variables to be compared with known taxa. Comparable measurements in these"
+  },
+  {
+    "query": "summarize Comparisons with Other Ornithopods given in the research paper",
+    "answer": "In the research paper, a detailed comparison of ornithopod dinosaur remains found at the El Horcajo site with other known ornithopod taxa is provided. The analysis includes a comparison of the caudal vertebrae, with similarities observed in CP 411 to styracosternans based on morphometric analyses. The fossil remains are also compared to various species such as Iguanodonidae indet., Cumnoria prestwichii, Magnamanus soriaensis, and others, highlighting similarities in centrum morphology. Additionally, comparisons are drawn with other ornithopods based on morphospaces, revealing distinct groupings of different ornithopod taxa. Through these comparisons, the research determines that the El Horcajo remains likely belong to styracosternan ornithopods."
+  }
+]
