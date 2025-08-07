@@ -11,6 +11,7 @@ from api.routes.chat_history_api import router as chat_history_router
 from api.routes.auth import router as auth_router
 from api.routes.management import router as management_router
 from api.routes.suggested_questions import router as suggested_questions_router
+from api.routes.table_of_contents import router as table_of_contents_router
 
 from database.schema import Base, engine
 import os
@@ -36,6 +37,7 @@ app.include_router(chat_history_router)
 app.include_router(auth_router, prefix="/auth")
 app.include_router(management_router, prefix="/manage")
 app.include_router(suggested_questions_router, prefix="/suggested-questions")
+app.include_router(table_of_contents_router, prefix="/table-of-contents")
 
 # Serve static files (frontend)
 frontend_path = os.path.join(os.path.dirname(__file__), "..", "frontend")

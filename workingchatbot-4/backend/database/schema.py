@@ -46,3 +46,12 @@ class SuggestedQuestion(Base):
     doc_id = Column(String, index=True)
     question_text = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+class TableOfContents(Base):
+    __tablename__ = "table_of_contents"
+    id = Column(Integer, primary_key=True, index=True)
+    doc_id = Column(String, index=True)
+    section_number = Column(String)
+    section_title = Column(String)
+    level = Column(Integer)  # 1 for main sections, 2 for subsections, etc.
+    created_at = Column(DateTime, default=datetime.utcnow)
