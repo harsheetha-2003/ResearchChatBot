@@ -8,6 +8,9 @@ from api.routes.chat import router as chat_router
 from api.routes.citation import router as citation_router
 from api.routes.view_docs import router as view_docs_router
 from api.routes.chat_history_api import router as chat_history_router
+from api.routes.auth import router as auth_router
+from api.routes.management import router as management_router
+from api.routes.suggested_questions import router as suggested_questions_router
 
 from database.schema import Base, engine
 import os
@@ -30,6 +33,9 @@ app.include_router(upload_router, prefix="/upload")
 app.include_router(chat_router, prefix="/chat")
 app.include_router(view_docs_router, prefix="/documents")
 app.include_router(chat_history_router)
+app.include_router(auth_router, prefix="/auth")
+app.include_router(management_router, prefix="/manage")
+app.include_router(suggested_questions_router, prefix="/suggested-questions")
 
 # Serve static files (frontend)
 frontend_path = os.path.join(os.path.dirname(__file__), "..", "frontend")

@@ -15,6 +15,15 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    password = Column(String, nullable=False)  # In production, this should be hashed
+    created_at = Column(DateTime, default=datetime.utcnow)
+
 class Document(Base):
     __tablename__ = "documents"
     id = Column(Integer, primary_key=True, index=True)
@@ -30,3 +39,10 @@ class Question(Base):
     question_text = Column(String)
     answer_text = Column(String)
     #created_at = Column(DateTime, default=datetime.utcnow)
+
+class SuggestedQuestion(Base):
+    __tablename__ = "suggested_questions"
+    id = Column(Integer, primary_key=True, index=True)
+    doc_id = Column(String, index=True)
+    question_text = Column(String)
+    created_at = Column(DateTime, default=datetime.utcnow)
